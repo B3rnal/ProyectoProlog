@@ -79,7 +79,7 @@
 				canvas = $("#canvas");
 				ctx = canvas[0].getContext("2d");
 				lineColor = 'red';
-				lineWidth = 1;
+				lineWidth = 2;
 				color = 'blue';
 				radius = 10;
 				delta = radius/3-1;
@@ -261,10 +261,33 @@
 				   // selection of both edges
 			       var res = {node:true, left:lastNodeSelected, right:nodeSelected};
 				   lastNodeSelected=null;
-				  
+///Editado
+				   drawEdge(res);
+//
 				   return res;
 				};
+				
 			   function foundSelectedEdge(point){
+///Editado
+			   	var x = point.x, y = point.y;
+				   // Find out which edge contains the point if anyone
+				   var edgeSelected;
+				   for(var i=0; i<edge.length; i++)
+					  if(edges[i].inside(x, y)){ 
+						edgeSelected = edges[i];
+						break;
+					};
+					if(!edgeSelected){
+						disable(edgeBtn);
+						return false;
+					}
+					disable(nodeBtn);
+					enable(edgeBtn);
+					if(!lastEdgeSelected){
+						lastEdgeSelected = edgeSelected; 
+						return true;
+					}
+//
 			       // to-do
 			       return false;
 				};
