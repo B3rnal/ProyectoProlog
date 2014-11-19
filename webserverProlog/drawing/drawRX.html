@@ -234,9 +234,17 @@
 				};
 			   function whoWasSelected(p){ // it was a node or an edge or none
 			      var n = foundSelectedNode(p);
-				  if(n.node) return n;
+
+				  if(n.node) {
+				  	//console.log(n);
+				  	return n;
+				  }
 				  var e =  foundSelectedEdge(p);
-				  if(e.edge) return e;
+				  //console.log(e);
+				  if(e.edge){
+				  	console.log(e);
+				  	return e;
+				  } 
 				  return {};
 			   };
 			   function foundSelectedNode(point){
@@ -272,11 +280,13 @@
 			   	var x = point.x, y = point.y;
 				   // Find out which edge contains the point if anyone
 				   var edgeSelected;
-				   for(var i=0; i<edge.length; i++)
+				   console.log(edges);
+				   for(var i=0; i<edges.length; i++)
 					  if(edges[i].inside(x, y)){ 
 						edgeSelected = edges[i];
 						break;
 					};
+					console.log(edgeSelected);
 					if(!edgeSelected){
 						disable(edgeBtn);
 						return false;
