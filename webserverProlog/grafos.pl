@@ -1,14 +1,27 @@
+% 		Universidad Nacional
+% 		Paradigmas de programación.
+%		Prof: Carlos Loria
+%		Autores:
+% 		- Bernal Araya Estrada
+% 		- Esteban Gamboa Arrieta
+% 		- Diego Alonso Méndez
+% 		Grupo 5pm
+
 :- dynamic arco/4, node/2, degree/3, stack/1, visited/1, tree/3, ruta/2.
+
 % arco(grafo, arco, izq, der).
 % node(grafo, nom).
 % degree(grafo, nodo, d).
 % stack(nodo).
 % visited(nodo).
-% ruta(nodo, nodo).
+% tree(raiz, izq, der).
+% ruta(from, to).
 
+% OBTIENE DATOS DEL JSON
 get_name(N)							:-	xx(json([grafo=json([name=N|_])|_])).
 get_nodes(NL)						:-	xx(json([grafo=json([_,nodes=NL|_])|_])).
 get_moves(M) 						:-	xx(json([grafo=json([_,_,moves=M])|_])).
+
 generate_nodes						:-	retractall(node(_,_)),
 										get_name(X),
 										get_nodes(NL),
@@ -25,6 +38,7 @@ generate_rutas						:-	retractall(ruta(_,_)),
 generate_graph						:-	generate_nodes,
 										generate_arcos,
 										generate_rutas.
+:- generate_graph.
 adjacent(G, N, M, E)				:-	arco(G, E, N, M);arco(G, E, M, N).
 find_proper_arco(G, N, E, M) 		:- 	adjacent(G, N, M, E), 
 										M\=N.
