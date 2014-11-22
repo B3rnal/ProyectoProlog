@@ -7,7 +7,11 @@
 % 		- Diego Alonso Méndez
 % 		Grupo 5pm
 
-:- dynamic arco/4, node/2, degree/3, stack/1, visited/1, tree/3, ruta/2.
+:- dynamic arco/4, node/2, degree/3, stack/1, visited/1, tree/3, tree/2,ruta/2, edge/2.
+:- use_module(library(record)). 
+:- use_module(library(http/json)).
+:- use_module(library(http/json_convert)).
+:- use_module(library(http/http_json)).
 
 % arco(grafo, arco, izq, der).
 % node(grafo, nom).
@@ -35,10 +39,17 @@ generate_rutas						:-	retractall(ruta(_,_)),
 										get_nodes(NL),
 										forall(member(N, NL),
 											   (find_rutas(N, R), assert(ruta(N, R)))).
+generate_edges 						:-	retractall(edge(_,_)),
+									  	forall(ruta(N, L),
+											   forall(member(M, L), 
+													  assert(edge(N, M)))).
 generate_graph						:-	generate_nodes,
 										generate_arcos,
-										generate_rutas.
+										generate_rutas,
+										generate_edges.
 :- generate_graph.
+
+
 adjacent(G, N, M, E)				:-	arco(G, E, N, M);arco(G, E, M, N).
 find_proper_arco(G, N, E, M) 		:- 	adjacent(G, N, M, E), 
 										M\=N.
@@ -48,7 +59,9 @@ find_proper_degree_node(G, N, D) 	:- 	node(G, N),
 										length(L, D).
 find_loop_degree_node(G, N, D) 		:- 	node(G, N), 
 										findall(1, find_loop_arco(G, N, _), L), 
-										length(L, K), D is K+K.
+										length(L, K), K is not(0), D is K+K.
+% find_not_connect(G, N, D)			:-	node(G, N),
+
 find_degree_node(G, N, D) 			:-	find_proper_degree_node(G, N, DP), find_loop_degree_node(G, N, DL), D is DP + DL.
 generate_degree(G)					:-	retractall(degree(_,_,_)),
 										forall(find_degree_node(G,N,D), assert(degree(G,N,D))).
@@ -65,3 +78,37 @@ dfs(G)								:-	retract(stack(N)),
 dfs(_).
 is_connected(G)						:-	node(G, N), !, dfs(G, N),
 										forall(node(G, M), visited(M)).
+
+adjacent(N, M) 						:- 	edge(N, M); edge(M, N).
+
+writeln(T) 							:- 	write(T), nl.
+
+path(A, B) 							:- 	adjacent(A, B), 
+										assert(tree(A, B)).
+
+path(A, B) 							:- 	adjacent(A, C),
+										not(visited(C)), 
+										assert(visited(C)), 
+										path(C, B),
+										assert(tree(A, C)).
+
+find_path(A, B) 					:- 	retractall(visited(_)), 
+					                   	retractall(tree(_,_)),
+					                   	assert(visited(A)), 
+					                   		   path(A, B).
+
+root(R) 							:- 	tree(R, _), \+tree(_, R).
+
+% Flag para que se vean  listas grandes o profundas
+:- 	set_prolog_flag(toplevel_print_options, [quoted(true), portray(true), max_depth(50), spacing(next_argument)]).
+
+:- 	json_object fromTo(from:atom, to:atom).
+:- 	json_object graph(edges:list).
+
+walk(P) 							:- 	root(R), 
+										walk(R, [], P).
+walk(R, L, P) 						:- 	tree(R, N), !, 
+										walk(N, [fromTo(R, N)|L], P).
+walk(_, L, R) 						:- 	reverse(L, R).
+
+walk_to_json 						:- 	walk(P), prolog_to_json(graph(P), J), json_write(current_output, J).
