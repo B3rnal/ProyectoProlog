@@ -23,8 +23,8 @@
 
 % OBTIENE DATOS DEL JSON
 get_name(N)							:-	xx(json([grafo=json([name=N|_])|_])).
-get_nodes(NL)						:-	xx(json([grafo=json([_,nodes=NL|_])|_])).
-get_moves(M) 						:-	xx(json([grafo=json([_,_,moves=M])|_])).
+get_nodes(NL)						:-	xx(json([grafo=json([_,_,nodes=NL|_])|_])).
+get_moves(M) 						:-	xx(json([grafo=json([_,_,_,moves=M])])).
 
 generate_nodes						:-	retractall(node(_,_)),
 										get_name(X),
@@ -59,7 +59,7 @@ find_proper_degree_node(G, N, D) 	:- 	node(G, N),
 										length(L, D).
 find_loop_degree_node(G, N, D) 		:- 	node(G, N), 
 										findall(1, find_loop_arco(G, N, _), L), 
-										length(L, K), K is not(0), D is K+K.
+										length(L, K), D is K+K.
 % find_not_connect(G, N, D)			:-	node(G, N),
 
 find_degree_node(G, N, D) 			:-	find_proper_degree_node(G, N, DP), find_loop_degree_node(G, N, DL), D is DP + DL.
@@ -112,3 +112,28 @@ walk(R, L, P) 						:- 	tree(R, N), !,
 walk(_, L, R) 						:- 	reverse(L, R).
 
 walk_to_json 						:- 	walk(P), prolog_to_json(graph(P), J), json_write(current_output, J).
+
+
+edgeList(X):-findall(E,arco(_,E,_,_),X).
+
+circuit(C) :- edgeList(E), circuit(E,[],C).
+
+circuit([],R,[Z|R]) :- z(Z,R).
+circuit(A,[],R) :-
+	member(X,A), exclude(X,A,Ar),
+	circuit(Ar,[X],R).
+circuit(A,[Cp|Cr],R) :-
+    member(X,A),
+ 	cxtr(X,Cp), exclude(X,A,Ar),
+	circuit(Ar,[X,Cp|Cr],R).
+
+xtr(E,S,F) :- arco(_,E,S,F).
+xtr(E,F,S) :- arco(_,E,S,F).
+cxtr(E1,E2) :- xtr(E1,_,F1), xtr(E2,F1,_).
+
+exclude(_,[],[]).
+exclude(X,[X|Xr],Xr).
+exclude(X,[Y|Yr],[Y|Zr]) :- X\=Y, exclude(X,Yr,Zr).
+
+z(X,[X]).
+z(X,[_|Yr]) :- z(X,Yr).
