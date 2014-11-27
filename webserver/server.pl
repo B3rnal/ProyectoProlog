@@ -75,7 +75,9 @@ say_error(_Request) :-
 say_json(Request) :-
       http_read_json(Request, JSONIn),
       json_to_prolog(JSONIn, PrologIn),
-	  assert(xx(PrologIn)),
+	    assert(xx(PrologIn)),
+      retractall(xx(_)),
+      assert(xx(PrologIn)),
       respondJson(PrologIn, PrologOut),		
       prolog_to_json(PrologOut, JSONOut),
       reply_json(JSONOut).
