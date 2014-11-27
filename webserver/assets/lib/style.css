@@ -1,0 +1,91 @@
+body{
+	color: #fff;
+	background-color: #333;
+}
+#canvas{
+	border-style:solid;
+	border-width:1px;
+	border-radius: 5px;
+	box-shadow: 0px 0px 10px #aaa;
+	width: 1000px;
+	height: 450px;
+	margin-bottom: 10px;
+	position: relative;
+	color: #2A9FD6;
+}
+
+.node-holder .node-delete{
+	font-size: 12px;
+	display: none;
+	position: absolute;
+	left: 22px;
+	top: 3px;
+}
+
+.node-holder .node-curl{
+	font-size: 12px;
+	display: none;
+	position: absolute;
+	right: 22px;
+	top: 3px;
+}
+
+.selected.node-holder .node-delete, .selected.node-holder .node-curl{
+	display: inline-block;
+}
+
+.hasCurl.node-holder .node-curl{
+	display: none;
+}
+
+.edge, .node{
+	font-size: 18px;
+}
+
+.node, .node-delete{
+	color: #5cb85c;
+	z-index: 10;
+}
+
+.selected .node-curl{
+	color: #2A9FD6;
+}
+.selected .node, .selected .node-delete{
+	color: #F80;
+}
+
+.edge-delete{
+	position: absolute;
+	display: none;
+	font-size: 12px;
+}
+
+.selected.edge, .selected .edge-delete{
+	color: #F80;
+	border-color: #F80;
+}
+
+.selected .edge-delete{
+	display: block;
+}
+
+.edge{
+	display: inline-block;
+	border: 1px solid #2A9FD6;
+	z-index: 5;
+	height: 2px;
+	background-color: #2A9FD6;
+}
+.edge.curl{
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+	border-width: 2px;
+	background-color: transparent;
+}
+.edge.sample{
+	margin-bottom: 3px;
+}
+#canvas .node-holder, #canvas .edge{
+	position: absolute;
+}
