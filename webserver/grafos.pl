@@ -115,9 +115,9 @@ walk_to_json 						:- 	walk(P), prolog_to_json(graph(P), J), json_write(current_
 
 edgeList(X):-findall(E,arco(_,E,_,_),X).
 
-circuit(C) :- edgeList(E), circuit(E,[],C),!.
+circuit(C) :- edgeList(E), circuit(E,[],C).
 
-circuit([],R,[Z|R]) :- z(Z,R).
+circuit([],R,R).
 circuit(A,[],R) :-
 	member(X,A), exclude(X,A,Ar),
 	circuit(Ar,[X],R).
@@ -133,7 +133,4 @@ cxtr(E1,E2) :- xtr(E1,_,F1), xtr(E2,F1,_).
 exclude(_,[],[]).
 exclude(X,[X|Xr],Xr).
 exclude(X,[Y|Yr],[Y|Zr]) :- X\=Y, exclude(X,Yr,Zr).
-
-z(X,[X]).
-z(X,[_|Yr]) :- z(X,Yr).
 
